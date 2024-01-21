@@ -8,6 +8,7 @@ import {
   Check,
   Edit,
   Female,
+  MyLocation,
   Power,
   Room,
   SoupKitchen,
@@ -741,6 +742,9 @@ function App() {
               <Cancel />
             </button>
           </div>
+          <Marker latitude={viewport.latitude} longitude={viewport.longitude}>
+            <MyLocation style={{ color: "cc71d2" }}></MyLocation>
+          </Marker>
         </Map>
       )}
     </div>
