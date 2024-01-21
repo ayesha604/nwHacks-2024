@@ -1,15 +1,53 @@
 .card {
   width: 250px;
-  height: 250px;
+  height: 100px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  /* justify-content: space-around; */
+  padding: 5px;
+}
+
+.checkBtn {
+  color: green;
+  margin-top: 20px;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 10px;
+  font-size: 15px;
+  flex-direction: row-reverse;
+}
+
+.ratingCard {
+  padding: 5px;
+}
+
+.icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.editBtnContainer {
+  display: flex;
+  justify-content: center;
+  color: red;
+  cursor: pointer;
 }
 
 label {
-  color: tomato;
+  color: black;
   font-size: 13px;
-  border-bottom: 0.5px solid tomato;
+  border-bottom: 0.5px solid black;
   margin: 3px 0;
 }
 
@@ -50,4 +88,37 @@ textarea::placeholder {
   color: white;
   background-color: tomato;
   cursor: pointer;
+}
+
+.buttons,
+.logout {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.button {
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button:focus {
+  outline: none;
+}
+
+.logout {
+  background-color: tomato;
+}
+
+.login {
+  background-color: teal;
+  margin-right: 10px;
+}
+
+.register {
+  background-color: slateblue;
 }

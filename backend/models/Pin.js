@@ -2,33 +2,43 @@ const mongoose = require("mongoose");
 
 const PinSchema = new mongoose.Schema(
   {
-    username: {
+    name: {
       type: String,
-      require: true,
     },
     title: {
       type: String,
-      require: true,
-      min: 3,
-    },
-    desc: {
-      type: String,
-      require: true,
-      min: 3,
-    },
-    rating: {
-      type: Number,
-      require: true,
-      min: 0,
-      max: 5,
     },
     lat: {
       type: Number,
-      require: true,
     },
     long: {
       type: Number,
-      require: true,
+    },
+    resources: {
+      wifi: {
+        yes: Number,
+        no: Number,
+      },
+      outlets: {
+        yes: Number,
+        no: Number,
+      },
+      washroom: {
+        yes: Number,
+        no: Number,
+      },
+      food: {
+        yes: Number,
+        no: Number,
+      },
+      twentyfourhr: {
+        yes: Number,
+        no: Number,
+      },
+      menstrual: {
+        yes: Number,
+        no: Number,
+      },
     },
   },
   { timestamps: true }
