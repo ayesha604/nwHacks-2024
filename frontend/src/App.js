@@ -2,6 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
 import {
+  Bolt,
   BrowseGallery,
   Check,
   Edit,
@@ -285,12 +286,12 @@ function App() {
                 <div className="card">
                   <h4 className="title">{p.title}</h4>
                   <div className="icons">
-                    {p.resources.wifi.yes > 1 && <Wifi />}
-                    <Power />
-                    <Wc />
-                    <SoupKitchen />
-                    <BrowseGallery />
-                    <Female />
+                    {p.resources.wifi.yes/(p.resources.wifi.yes + p.resources.wifi.no) > 0.6 && <Wifi />}
+                    {p.resources.outlets.yes/(p.resources.outlets.yes + p.resources.outlets.no) > 0.6 && <Bolt />}
+                    {p.resources.washroom.yes/(p.resources.washroom.yes + p.resources.washroom.no) > 0.6 && <Wc />}
+                    {p.resources.food.yes/(p.resources.food.yes + p.resources.food.no) > 0.6 && <SoupKitchen />}
+                    {p.resources.twentyfourhr.yes/(p.resources.twentyfourhr.yes + p.resources.twentyfourhr.no) > 0.6 && <BrowseGallery />}
+                    {p.resources.menstrual.yes/(p.resources.menstrual.yes + p.resources.menstrual.no) > 0.6 && <Female />}
                   </div>
                   <div className="editBtnContainer">
                     <Edit
@@ -333,7 +334,7 @@ function App() {
                       />
                     </div>
                     <div className="ratingContainer">
-                      <p>Outlets</p>
+                      <p>Chargers</p>
                       <p>
                         {Math.floor(
                           (p.resources.outlets.yes * 100) /
@@ -353,8 +354,10 @@ function App() {
                     <div className="ratingContainer">
                       <p>Washrooms</p>
                       <p>
-                        {(p.resources.washroom.yes * 100) /
-                          (p.resources.washroom.yes + p.resources.washroom.no)}
+                        {Math.floor(
+                          (p.resources.washroom.yes * 100) /
+                          (p.resources.washroom.yes + p.resources.washroom.no)
+                          )}
                         %
                       </p>
                       <ThumbDown
@@ -369,8 +372,10 @@ function App() {
                     <div className="ratingContainer">
                       <p>Food</p>
                       <p>
-                        {(p.resources.food.yes * 100) /
-                          (p.resources.food.yes + p.resources.food.no)}
+                      {Math.floor(
+                        (p.resources.food.yes * 100) /
+                        (p.resources.food.yes + p.resources.food.no)
+                        )}
                         %
                       </p>
                       <ThumbDown
@@ -385,9 +390,11 @@ function App() {
                     <div className="ratingContainer">
                       <p>Open 24h</p>
                       <p>
-                        {(p.resources.twentyfourhr.yes * 100) /
-                          (p.resources.twentyfourhr.yes +
-                            p.resources.twentyfourhr.no)}
+                      {Math.floor(
+                        (p.resources.twentyfourhr.yes * 100) /
+                        (p.resources.twentyfourhr.yes +
+                        p.resources.twentyfourhr.no)
+                        )}
                         %
                       </p>
                       <ThumbDown
@@ -402,9 +409,10 @@ function App() {
                     <div className="ratingContainer">
                       <p>Mentrual</p>
                       <p>
-                        {(p.resources.menstrual.yes * 100) /
-                          (p.resources.menstrual.yes +
-                            p.resources.menstrual.no)}
+                      {Math.floor((p.resources.menstrual.yes * 100) /
+                        (p.resources.menstrual.yes +
+                        p.resources.menstrual.no)
+                        )}
                         %
                       </p>
                       <ThumbDown
