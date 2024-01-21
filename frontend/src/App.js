@@ -407,10 +407,17 @@ function App() {
                       <div className="ratingContainer">
                         <p>Wifi</p>
                         <p>
-                          {Math.floor(
-                            (p.resources.wifi.yes * 100) /
-                              (p.resources.wifi.yes + p.resources.wifi.no)
-                          )}
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.wifi.yes * 100) /
+                                (p.resources.wifi.yes + p.resources.wifi.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.wifi.yes * 100) /
+                                  (p.resources.wifi.yes + p.resources.wifi.no)
+                              )}
                           %
                         </p>
                         <ThumbDown
@@ -425,10 +432,19 @@ function App() {
                       <div className="ratingContainer">
                         <p>Charger</p>
                         <p>
-                          {Math.floor(
-                            (p.resources.outlets.yes * 100) /
-                              (p.resources.outlets.yes + p.resources.outlets.no)
-                          )}
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.outlets.yes * 100) /
+                                (p.resources.outlets.yes +
+                                  p.resources.outlets.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.outlets.yes * 100) /
+                                  (p.resources.outlets.yes +
+                                    p.resources.outlets.no)
+                              )}
                           %
                         </p>
                         <ThumbDown
@@ -443,11 +459,19 @@ function App() {
                       <div className="ratingContainer">
                         <p>Washrooms</p>
                         <p>
-                          {Math.floor(
-                            (p.resources.washroom.yes * 100) /
-                              (p.resources.washroom.yes +
-                                p.resources.washroom.no)
-                          )}
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.washroom.yes * 100) /
+                                (p.resources.washroom.yes +
+                                  p.resources.washroom.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.washroom.yes * 100) /
+                                  (p.resources.washroom.yes +
+                                    p.resources.washroom.no)
+                              )}
                           %
                         </p>
                         <ThumbDown
@@ -462,10 +486,17 @@ function App() {
                       <div className="ratingContainer">
                         <p>Food</p>
                         <p>
-                          {Math.floor(
-                            (p.resources.food.yes * 100) /
-                              (p.resources.food.yes + p.resources.food.no)
-                          )}
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.food.yes * 100) /
+                                (p.resources.food.yes + p.resources.food.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.food.yes * 100) /
+                                  (p.resources.food.yes + p.resources.food.no)
+                              )}
                           %
                         </p>
                         <ThumbDown
@@ -480,11 +511,19 @@ function App() {
                       <div className="ratingContainer">
                         <p>Open 24h</p>
                         <p>
-                          {Math.floor(
-                            (p.resources.twentyfourhr.yes * 100) /
-                              (p.resources.twentyfourhr.yes +
-                                p.resources.twentyfourhr.no)
-                          )}
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.twentyfourhr.yes * 100) /
+                                (p.resources.twentyfourhr.yes +
+                                  p.resources.twentyfourhr.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.twentyfourhr.yes * 100) /
+                                  (p.resources.twentyfourhr.yes +
+                                    p.resources.twentyfourhr.no)
+                              )}
                           %
                         </p>
                         <ThumbDown
@@ -499,11 +538,19 @@ function App() {
                       <div className="ratingContainer">
                         <p>Mentrual</p>
                         <p>
-                          {Math.floor(
-                            (p.resources.menstrual.yes * 100) /
-                              (p.resources.menstrual.yes +
-                                p.resources.menstrual.no)
-                          )}
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.menstrual.yes * 100) /
+                                (p.resources.menstrual.yes +
+                                  p.resources.menstrual.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.menstrual.yes * 100) /
+                                  (p.resources.menstrual.yes +
+                                    p.resources.menstrual.no)
+                              )}
                           %
                         </p>
                         <ThumbDown
