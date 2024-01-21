@@ -16,6 +16,29 @@
   margin-top: 20px;
 }
 
+.filters {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.filter {
+  width: 50px;
+  height: 50px;
+  background-color: slateblue;
+}
+
+.filterIcon {
+  color: white;
+}
+
+.cancel {
+  background-color: tomato;
+}
+
 .ratingContainer,
 .initialRatingContainer {
   display: flex;
@@ -61,7 +84,7 @@
 .editBtnContainer {
   display: flex;
   justify-content: center;
-  color: red;
+  color: tomato;
   cursor: pointer;
 }
 

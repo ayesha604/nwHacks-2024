@@ -4,6 +4,7 @@ import Map, { Marker, Popup } from "react-map-gl";
 import {
   Bolt,
   BrowseGallery,
+  Cancel,
   Check,
   Edit,
   Female,
@@ -49,6 +50,8 @@ function App() {
   const [hrsNo, setHrsNo] = useState(false);
   const [menstrualYes, setMenstrualYes] = useState(false);
   const [menstrualNo, setMenstrualNo] = useState(false);
+
+  const [filter, setFilter] = useState("");
 
   const [viewport, setViewport] = useState(undefined);
 
@@ -312,6 +315,29 @@ function App() {
   const handleNewHrsThumbsUp = () => {
     setHrsYes(!hrsYes);
   };
+
+  const resetFilter = async (f) => {
+    setFilter(f);
+    const fil = { filter: f };
+
+    try {
+      const res = await axios.post("/pins/filter", { f });
+      setPins(res.data);
+      console.log("peeeeee");
+    } catch (err) {
+      console.log(err);
+    }
+
+    // console.log(res.data);
+  };
+
+  // try {
+  //   const res = await axios.post("/pins", newPin);
+  //   setPins([...pins, res.data]);
+  //   setNewPlace(null);
+  // } catch (err) {
+  //   console.log(err);
+  // }
 
   return (
     <div className="App">
@@ -670,6 +696,51 @@ function App() {
               myStorage={myStorage}
             />
           )}
+          <div className="filters">
+            <button
+              className="filter button wifi"
+              onClick={() => resetFilter("wifi")}
+            >
+              <Wifi className="filterIcon" />
+            </button>
+            <button
+              className="filter button outlet"
+              onClick={() => resetFilter("outlet")}
+            >
+              <Power className="filterIcon" />
+            </button>
+            <button
+              className="filter button washrooms"
+              onClick={() => resetFilter("washrooms")}
+            >
+              <Wc className="filterIcon" />
+            </button>
+            <button
+              className="filter button food"
+              onClick={() => resetFilter("food")}
+            >
+              <SoupKitchen className="filterIcon" />
+            </button>
+            <button
+              className="filter button hrs"
+              onClick={() => resetFilter("hrs")}
+            >
+              <BrowseGallery className="filterIcon" />
+            </button>
+            <button
+              className="filter button menstrual"
+              onClick={() => resetFilter("menstrual")}
+            >
+              <Female className="filterIcon" />
+            </button>
+
+            <button
+              className="filter button cancel"
+              onClick={() => resetFilter("")}
+            >
+              <Cancel />
+            </button>
+          </div>
         </Map>
       )}
     </div>
