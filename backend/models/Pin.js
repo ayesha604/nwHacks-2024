@@ -1,37 +1,32 @@
 const mongoose = require("mongoose");
 
-const PinSchema = new mongoose.Schema(
-  {
-    username: {
+const PinSchema = new mongoose.Schema({
+    name: {
       type: String,
-      require: true,
-    },
-    title: {
-      type: String,
-      require: true,
-      min: 3,
-    },
-    desc: {
-      type: String,
-      require: true,
-      min: 3,
-    },
-    rating: {
-      type: Number,
-      require: true,
-      min: 0,
-      max: 5,
     },
     lat: {
       type: Number,
-      require: true,
     },
-    long: {
+    long : {
       type: Number,
-      require: true,
+    },
+    Address: {
+      type: String,
+    },
+    Resources: {
+      wifi: Boolean,
+      outlets: Boolean,
+      washroom: Boolean,
+      food: Boolean,
+      warm: Boolean
+    },
+    Description: {
+      gn_washroom: Boolean,
+      acc_washroom: Boolean,
+      Fem_hygiene: Boolean,            
     },
   },
-  { timestamps: true }
+  { timestamps: true }  
 );
 
 module.exports = mongoose.model("Pin", PinSchema);
