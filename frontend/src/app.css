@@ -1,6 +1,5 @@
 .card {
   width: 250px;
-  height: 100px;
   display: flex;
   flex-direction: column;
   /* justify-content: space-around; */
@@ -51,7 +50,7 @@
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .title {

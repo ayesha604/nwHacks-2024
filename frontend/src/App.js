@@ -65,11 +65,11 @@ function App() {
           });
         },
         (error) => {
-          console.error('Error getting user location:', error.message);
+          console.error("Error getting user location:", error.message);
         }
       );
     } else {
-      console.error('Geolocation is not supported by your browser');
+      console.error("Geolocation is not supported by your browser");
     }
   }, []); // Run this effect once on component mount
 
@@ -86,6 +86,7 @@ function App() {
       // console.log(res.data);
     };
     getPins();
+    console.log(currentUser);
   }, [currentEditPlaceId]);
 
   const handleMarkerClick = (id, lat, long) => {
@@ -97,16 +98,18 @@ function App() {
   };
 
   const handleAddClick = (e) => {
-    setCurrentPlaceId(null);
-    setEditCurrentPlaceId(null);
-    console.log(e);
-    const lat = e.lngLat.lat;
-    const long = e.lngLat.lng;
-    console.log(lat, long);
-    setNewPlace({
-      lat,
-      long,
-    });
+    if (currentUser) {
+      setCurrentPlaceId(null);
+      setEditCurrentPlaceId(null);
+      console.log(e);
+      const lat = e.lngLat.lat;
+      const long = e.lngLat.lng;
+      console.log(lat, long);
+      setNewPlace({
+        lat,
+        long,
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -313,308 +316,366 @@ function App() {
 
   return (
     <div className="App">
-      {viewport && <Map
-        //{...viewport}
-        mapboxAccessToken="pk.eyJ1Ijoic2FicmluYWxvdSIsImEiOiJjbHJtcXAybDUweGtxMmpwOTZhenlpeHZtIn0.RsL-gzj42VvTaEURdM_A7g"
-        initialViewState={{
-          longitude: viewport.longitude,
-          latitude: viewport.latitude,
-          zoom: 11,
-        }}
-        dragPan={true}
-        onDblClick={handleAddClick}
-        style={{ width: "100vw", height: "100vh" }}
-        mapStyle="mapbox://styles/mapbox/streets-v9"
-        // onMove={(viewport) => setViewport(viewport)}
-      >
-        {pins.map((p) => (
-          <>
-            <Marker
-              key={p._id}
-              longitude={p.long}
-              latitude={p.lat}
-              anchor="bottom"
+      {viewport && (
+        <Map
+          //{...viewport}
+          mapboxAccessToken="pk.eyJ1Ijoic2FicmluYWxvdSIsImEiOiJjbHJtcXAybDUweGtxMmpwOTZhenlpeHZtIn0.RsL-gzj42VvTaEURdM_A7g"
+          initialViewState={{
+            longitude: viewport.longitude,
+            latitude: viewport.latitude,
+            zoom: 11,
+          }}
+          dragPan={true}
+          onDblClick={handleAddClick}
+          style={{ width: "100vw", height: "100vh" }}
+          mapStyle="mapbox://styles/mapbox/streets-v9"
+          // onMove={(viewport) => setViewport(viewport)}
+        >
+          {pins.map((p) => (
+            <>
+              <Marker
+                key={p._id}
+                longitude={p.long}
+                latitude={p.lat}
+                anchor="bottom"
+              >
+                <Room
+                  style={{
+                    fontSize: visualViewport.zoom * 10,
+                    color: p.username === currentUser ? "tomato" : "slateblue",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleMarkerClick(p._id, p.lat, p.long)}
+                />
+              </Marker>
+              {p._id === currentPlaceId && (
+                <Popup
+                  longitude={p.long}
+                  latitude={p.lat}
+                  anchor="left"
+                  closeOnClick={false}
+                  onClose={() => {
+                    setCurrentPlaceId(null);
+                  }}
+                >
+                  <div className="card">
+                    <h4 className="title">{p.title}</h4>
+                    <div className="icons">
+                      {p.resources.wifi.yes /
+                        (p.resources.wifi.yes + p.resources.wifi.no) >
+                        0.6 && <Wifi />}
+                      {p.resources.outlets.yes /
+                        (p.resources.outlets.yes + p.resources.outlets.no) >
+                        0.6 && <Bolt />}
+                      {p.resources.washroom.yes /
+                        (p.resources.washroom.yes + p.resources.washroom.no) >
+                        0.6 && <Wc />}
+                      {p.resources.food.yes /
+                        (p.resources.food.yes + p.resources.food.no) >
+                        0.6 && <SoupKitchen />}
+                      {p.resources.twentyfourhr.yes /
+                        (p.resources.twentyfourhr.yes +
+                          p.resources.twentyfourhr.no) >
+                        0.6 && <BrowseGallery />}
+                      {p.resources.menstrual.yes /
+                        (p.resources.menstrual.yes + p.resources.menstrual.no) >
+                        0.6 && <Female />}
+                    </div>
+                    {currentUser && (
+                      <div className="editBtnContainer">
+                        <Edit
+                          className="editBtn"
+                          onClick={() => handlePinEdit(p._id)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </Popup>
+              )}
+              {p._id === currentEditPlaceId && (
+                <Popup
+                  longitude={p.long}
+                  latitude={p.lat}
+                  anchor="left"
+                  closeOnClick={false}
+                  onClose={() => {
+                    setEditCurrentPlaceId(null);
+                  }}
+                >
+                  <div className="ratingCard">
+                    <h4 className="title">{p.title}</h4>
+                    <form className="rating">
+                      <div className="ratingContainer">
+                        <p>Wifi</p>
+                        <p>
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.wifi.yes * 100) /
+                                (p.resources.wifi.yes + p.resources.wifi.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.wifi.yes * 100) /
+                                  (p.resources.wifi.yes + p.resources.wifi.no)
+                              )}
+                          %
+                        </p>
+                        <ThumbDown
+                          style={{ color: wifiNo ? "red" : "gray" }}
+                          onClick={() => handleWifiThumbsDown()}
+                        />
+                        <ThumbUp
+                          style={{ color: wifiYes ? "green" : "gray" }}
+                          onClick={() => handleWifiThumbsUp()}
+                        />
+                      </div>
+                      <div className="ratingContainer">
+                        <p>Charger</p>
+                        <p>
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.outlets.yes * 100) /
+                                (p.resources.outlets.yes +
+                                  p.resources.outlets.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.outlets.yes * 100) /
+                                  (p.resources.outlets.yes +
+                                    p.resources.outlets.no)
+                              )}
+                          %
+                        </p>
+                        <ThumbDown
+                          style={{ color: outletsNo ? "red" : "gray" }}
+                          onClick={() => handleOutletsThumbsDown()}
+                        />
+                        <ThumbUp
+                          style={{ color: outletsYes ? "green" : "gray" }}
+                          onClick={() => handleOutletsThumbsUp()}
+                        />
+                      </div>
+                      <div className="ratingContainer">
+                        <p>Washrooms</p>
+                        <p>
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.washroom.yes * 100) /
+                                (p.resources.washroom.yes +
+                                  p.resources.washroom.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.washroom.yes * 100) /
+                                  (p.resources.washroom.yes +
+                                    p.resources.washroom.no)
+                              )}
+                          %
+                        </p>
+                        <ThumbDown
+                          style={{ color: washroomsNo ? "red" : "gray" }}
+                          onClick={() => handleWashroomsThumbsDown()}
+                        />
+                        <ThumbUp
+                          style={{ color: washroomsYes ? "green" : "gray" }}
+                          onClick={() => handleWashroomsThumbsUp()}
+                        />
+                      </div>
+                      <div className="ratingContainer">
+                        <p>Food</p>
+                        <p>
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.food.yes * 100) /
+                                (p.resources.food.yes + p.resources.food.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.food.yes * 100) /
+                                  (p.resources.food.yes + p.resources.food.no)
+                              )}
+                          %
+                        </p>
+                        <ThumbDown
+                          style={{ color: foodNo ? "red" : "gray" }}
+                          onClick={() => handleFoodThumbsDown()}
+                        />
+                        <ThumbUp
+                          style={{ color: foodYes ? "green" : "gray" }}
+                          onClick={() => handleFoodThumbsUp()}
+                        />
+                      </div>
+                      <div className="ratingContainer">
+                        <p>Open 24h</p>
+                        <p>
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.twentyfourhr.yes * 100) /
+                                (p.resources.twentyfourhr.yes +
+                                  p.resources.twentyfourhr.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.twentyfourhr.yes * 100) /
+                                  (p.resources.twentyfourhr.yes +
+                                    p.resources.twentyfourhr.no)
+                              )}
+                          %
+                        </p>
+                        <ThumbDown
+                          style={{ color: hrsNo ? "red" : "gray" }}
+                          onClick={() => handleHrsThumbsDown()}
+                        />
+                        <ThumbUp
+                          style={{ color: hrsYes ? "green" : "gray" }}
+                          onClick={() => handleHrsThumbsUp()}
+                        />
+                      </div>
+                      <div className="ratingContainer">
+                        <p>Mentrual</p>
+                        <p>
+                          {isNaN(
+                            Math.floor(
+                              (p.resources.menstrual.yes * 100) /
+                                (p.resources.menstrual.yes +
+                                  p.resources.menstrual.no)
+                            )
+                          )
+                            ? 0
+                            : Math.floor(
+                                (p.resources.menstrual.yes * 100) /
+                                  (p.resources.menstrual.yes +
+                                    p.resources.menstrual.no)
+                              )}
+                          %
+                        </p>
+                        <ThumbDown
+                          style={{ color: menstrualNo ? "red" : "gray" }}
+                          onClick={() => handleMenstrualThumbsDown()}
+                        />
+                        <ThumbUp
+                          style={{ color: menstrualYes ? "green" : "gray" }}
+                          onClick={() => handleMenstrualThumbsUp()}
+                        />
+                      </div>
+                    </form>
+                    <div className="editBtnContainer">
+                      <Check
+                        className="checkBtn"
+                        onClick={() => handleSubmitRating(p._id)}
+                      />
+                    </div>
+                  </div>
+                </Popup>
+              )}
+            </>
+          ))}
+          {newPlace && (
+            <Popup
+              longitude={newPlace.long}
+              latitude={newPlace.lat}
+              anchor="left"
+              closeOnClick={false}
+              onClose={() => {
+                setNewPlace(null);
+              }}
             >
-              <Room
-                style={{
-                  fontSize: visualViewport.zoom * 10,
-                  color: p.username === currentUser ? "tomato" : "slateblue",
-                  cursor: "pointer",
-                }}
-                onClick={() => handleMarkerClick(p._id, p.lat, p.long)}
-              />
-            </Marker>
-            {p._id === currentPlaceId && (
-              <Popup
-                longitude={p.long}
-                latitude={p.lat}
-                anchor="left"
-                closeOnClick={false}
-                onClose={() => {
-                  setCurrentPlaceId(null);
-                }}
-              >
-                <div className="card">
-                  <h4 className="title">{p.title}</h4>
-                  <div className="icons">
-                    {p.resources.wifi.yes/(p.resources.wifi.yes + p.resources.wifi.no) > 0.6 && <Wifi />}
-                    {p.resources.outlets.yes/(p.resources.outlets.yes + p.resources.outlets.no) > 0.6 && <Bolt />}
-                    {p.resources.washroom.yes/(p.resources.washroom.yes + p.resources.washroom.no) > 0.6 && <Wc />}
-                    {p.resources.food.yes/(p.resources.food.yes + p.resources.food.no) > 0.6 && <SoupKitchen />}
-                    {p.resources.twentyfourhr.yes/(p.resources.twentyfourhr.yes + p.resources.twentyfourhr.no) > 0.6 && <BrowseGallery />}
-                    {p.resources.menstrual.yes/(p.resources.menstrual.yes + p.resources.menstrual.no) > 0.6 && <Female />}
+              <div className="ratingCard2">
+                <label>Place</label>
+                <input
+                  placeholder="What's this place called?"
+                  onChange={(e) => setTitle(e.target.value)}
+                ></input>
+                <label className="ammenities">Ammenities</label>
+                <div>
+                  <div className="initialRatingContainer">
+                    <p>Wifi</p>
+                    <ThumbUp
+                      style={{ color: wifiYes ? "green" : "gray" }}
+                      onClick={() => handleNewWifiThumbsUp()}
+                    />
                   </div>
-                  <div className="editBtnContainer">
-                    <Edit
-                      className="editBtn"
-                      onClick={() => handlePinEdit(p._id)}
+                  <div className="initialRatingContainer">
+                    <p>Chargers</p>
+                    <ThumbUp
+                      style={{ color: outletsYes ? "green" : "gray" }}
+                      onClick={() => handleNewOutletsThumbsUp()}
+                    />
+                  </div>
+                  <div className="initialRatingContainer">
+                    <p>Washrooms</p>
+                    <ThumbUp
+                      style={{ color: washroomsYes ? "green" : "gray" }}
+                      onClick={() => handleNewWashroomsThumbsUp()}
+                    />
+                  </div>
+                  <div className="initialRatingContainer">
+                    <p>Food</p>
+                    <ThumbUp
+                      style={{ color: foodYes ? "green" : "gray" }}
+                      onClick={() => handleNewFoodThumbsUp()}
+                    />
+                  </div>
+                  <div className="initialRatingContainer">
+                    <p>Open 24h</p>
+                    <ThumbUp
+                      style={{ color: hrsYes ? "green" : "gray" }}
+                      onClick={() => handleNewHrsThumbsUp()}
+                    />
+                  </div>
+                  <div className="initialRatingContainer">
+                    <p>Menstrual</p>
+                    <ThumbUp
+                      style={{ color: menstrualYes ? "green" : "gray" }}
+                      onClick={() => handleNewMenstrualThumbsUp()}
                     />
                   </div>
                 </div>
-              </Popup>
-            )}
-            {p._id === currentEditPlaceId && (
-              <Popup
-                longitude={p.long}
-                latitude={p.lat}
-                anchor="left"
-                closeOnClick={false}
-                onClose={() => {
-                  setEditCurrentPlaceId(null);
-                }}
-              >
-                <div className="ratingCard">
-                  <h4 className="title">{p.title}</h4>
-                  <form className="rating">
-                    <div className="ratingContainer">
-                      <p>Wifi</p>
-                      <p>
-                      {isNaN(Math.floor(
-                        (p.resources.wifi.yes * 100) /
-                        (p.resources.wifi.yes + p.resources.wifi.no)
-                        )) ? 0 : Math.floor(
-                          (p.resources.wifi.yes * 100) /
-                          (p.resources.wifi.yes + p.resources.wifi.no))}
-                        %
-                      </p>
-                      <ThumbDown
-                        style={{ color: wifiNo ? "red" : "gray" }}
-                        onClick={() => handleWifiThumbsDown()}
-                      />
-                      <ThumbUp
-                        style={{ color: wifiYes ? "green" : "gray" }}
-                        onClick={() => handleWifiThumbsUp()}
-                      />
-                    </div>
-                    <div className="ratingContainer">
-                      <p>Charger</p>
-                      <p>
-                      {isNaN(Math.floor(
-                        (p.resources.outlets.yes * 100) /
-                        (p.resources.outlets.yes + p.resources.outlets.no)
-                        )) ? 0 : Math.floor(
-                          (p.resources.outlets.yes * 100) /
-                          (p.resources.outlets.yes + p.resources.outlets.no))}
-                        %
-                      </p>
-                      <ThumbDown
-                        style={{ color: outletsNo ? "red" : "gray" }}
-                        onClick={() => handleOutletsThumbsDown()}
-                      />
-                      <ThumbUp
-                        style={{ color: outletsYes ? "green" : "gray" }}
-                        onClick={() => handleOutletsThumbsUp()}
-                      />
-                    </div>
-                    <div className="ratingContainer">
-                      <p>Washrooms</p>
-                      <p>
-                      {isNaN(Math.floor(
-                        (p.resources.washroom.yes * 100) /
-                        (p.resources.washroom.yes + p.resources.washroom.no)
-                        )) ? 0 : Math.floor(
-                          (p.resources.washroom.yes * 100) /
-                          (p.resources.washroom.yes + p.resources.washroom.no))}
-                        %
-                      </p>
-                      <ThumbDown
-                        style={{ color: washroomsNo ? "red" : "gray" }}
-                        onClick={() => handleWashroomsThumbsDown()}
-                      />
-                      <ThumbUp
-                        style={{ color: washroomsYes ? "green" : "gray" }}
-                        onClick={() => handleWashroomsThumbsUp()}
-                      />
-                    </div>
-                    <div className="ratingContainer">
-                      <p>Food</p>
-                      <p>
-                      {isNaN(Math.floor(
-                        (p.resources.food.yes * 100) /
-                        (p.resources.food.yes + p.resources.food.no)
-                        )) ? 0 : Math.floor(
-                          (p.resources.food.yes * 100) /
-                          (p.resources.food.yes + p.resources.food.no))}
-                        %
-                      </p>
-                      <ThumbDown
-                        style={{ color: foodNo ? "red" : "gray" }}
-                        onClick={() => handleFoodThumbsDown()}
-                      />
-                      <ThumbUp
-                        style={{ color: foodYes ? "green" : "gray" }}
-                        onClick={() => handleFoodThumbsUp()}
-                      />
-                    </div>
-                    <div className="ratingContainer">
-                      <p>Open 24h</p>
-                      <p>
-                      {isNaN(Math.floor(
-                        (p.resources.twentyfourhr.yes * 100) /
-                        (p.resources.twentyfourhr.yes + p.resources.twentyfourhr.no)
-                        )) ? 0 : Math.floor(
-                          (p.resources.twentyfourhr.yes * 100) /
-                          (p.resources.twentyfourhr.yes + p.resources.twentyfourhr.no))}
-                        %
-                      </p>
-                      <ThumbDown
-                        style={{ color: hrsNo ? "red" : "gray" }}
-                        onClick={() => handleHrsThumbsDown()}
-                      />
-                      <ThumbUp
-                        style={{ color: hrsYes ? "green" : "gray" }}
-                        onClick={() => handleHrsThumbsUp()}
-                      />
-                    </div>
-                    <div className="ratingContainer">
-                      <p>Mentrual</p>
-                      <p>
-                      {isNaN(Math.floor(
-                        (p.resources.menstrual.yes * 100) /
-                        (p.resources.menstrual.yes + p.resources.menstrual.no)
-                        )) ? 0 : Math.floor(
-                          (p.resources.menstrual.yes * 100) /
-                          (p.resources.menstrual.yes + p.resources.menstrual.no))}
-                        %
-                      </p>
-                      <ThumbDown
-                        style={{ color: menstrualNo ? "red" : "gray" }}
-                        onClick={() => handleMenstrualThumbsDown()}
-                      />
-                      <ThumbUp
-                        style={{ color: menstrualYes ? "green" : "gray" }}
-                        onClick={() => handleMenstrualThumbsUp()}
-                      />
-                    </div>
-                  </form>
-                  <div className="editBtnContainer">
-                    <Check
-                      className="checkBtn"
-                      onClick={() => handleSubmitRating(p._id)}
-                    />
-                  </div>
-                </div>
-              </Popup>
-            )}
-          </>
-        ))}
-        {newPlace && (
-          <Popup
-            longitude={newPlace.long}
-            latitude={newPlace.lat}
-            anchor="left"
-            closeOnClick={false}
-            onClose={() => {
-              setNewPlace(null);
-            }}
-          >
-            <div className="ratingCard2">
-              <label>Place</label>
-              <input
-                placeholder="What's this place called?"
-                onChange={(e) => setTitle(e.target.value)}
-              ></input>
-              <label className="ammenities">Ammenities</label>
-              <div>
-                <div className="initialRatingContainer">
-                  <p>Wifi</p>
-                  <ThumbUp
-                    style={{ color: wifiYes ? "green" : "gray" }}
-                    onClick={() => handleNewWifiThumbsUp()}
-                  />
-                </div>
-                <div className="initialRatingContainer">
-                  <p>Chargers</p>
-                  <ThumbUp
-                    style={{ color: outletsYes ? "green" : "gray" }}
-                    onClick={() => handleNewOutletsThumbsUp()}
-                  />
-                </div>
-                <div className="initialRatingContainer">
-                  <p>Washrooms</p>
-                  <ThumbUp
-                    style={{ color: washroomsYes ? "green" : "gray" }}
-                    onClick={() => handleNewWashroomsThumbsUp()}
-                  />
-                </div>
-                <div className="initialRatingContainer">
-                  <p>Food</p>
-                  <ThumbUp
-                    style={{ color: foodYes ? "green" : "gray" }}
-                    onClick={() => handleNewFoodThumbsUp()}
-                  />
-                </div>
-                <div className="initialRatingContainer">
-                  <p>Open 24h</p>
-                  <ThumbUp
-                    style={{ color: hrsYes ? "green" : "gray" }}
-                    onClick={() => handleNewHrsThumbsUp()}
-                  />
-                </div>
-                <div className="initialRatingContainer">
-                  <p>Menstrual</p>
-                  <ThumbUp
-                    style={{ color: menstrualYes ? "green" : "gray" }}
-                    onClick={() => handleNewMenstrualThumbsUp()}
-                  />
-                </div>
-              </div>
 
-              <button className="submitButton" onClick={() => handleSubmit()}>
-                Add Pin
+                <button className="submitButton" onClick={() => handleSubmit()}>
+                  Add Pin
+                </button>
+              </div>
+            </Popup>
+          )}
+          {currentUser ? (
+            <button className="button logout" onClick={handleLogout}>
+              Log out
+            </button>
+          ) : (
+            <div className="buttons">
+              <button
+                className="button login"
+                onClick={() => setShowLogin(true)}
+              >
+                Login
+              </button>
+              <button
+                className="button register"
+                onClick={() => setShowRegister(true)}
+              >
+                Register
               </button>
             </div>
-          </Popup>
-        )}
-        {currentUser ? (
-          <button className="button logout" onClick={handleLogout}>
-            Log out
-          </button>
-        ) : (
-          <div className="buttons">
-            <button className="button login" onClick={() => setShowLogin(true)}>
-              Login
-            </button>
-            <button
-              className="button register"
-              onClick={() => setShowRegister(true)}
-            >
-              Register
-            </button>
-          </div>
-        )}
-        {showRegister && <Register setShowRegister={setShowRegister} />}
-        {showLogin && (
-          <Login
-            setShowLogin={setShowLogin}
-            setCurrentUser={setCurrentUser}
-            myStorage={myStorage}
-          />
-        )}
+          )}
+          {showRegister && <Register setShowRegister={setShowRegister} />}
+          {showLogin && (
+            <Login
+              setShowLogin={setShowLogin}
+              setCurrentUser={setCurrentUser}
+              myStorage={myStorage}
+            />
+          )}
         <Marker latitude={viewport.latitude} longitude={viewport.longitude}>
         <MyLocation style = {{color: "cc71d2"}}></MyLocation>
       </Marker>
-      </Map>}
+        </Map>
+      )}
     </div>
   );
 }
