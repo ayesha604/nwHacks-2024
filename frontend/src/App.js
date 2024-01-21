@@ -11,16 +11,23 @@ import {
 import "./app.css";
 import axios from "axios";
 import { format } from "timeago.js";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
-  const currentUser = "jogn";
+  const myStorage = window.localStorage;
+
+  const [currentUser, setCurrentUser] = useState(myStorage.getItem("user"));
 
   const [pins, setPins] = useState([]);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
   const [title, setTitle] = useState(null);
   const [desc, setDesc] = useState(null);
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
+
+  const [showRegister, setShowRegister] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   const [viewport, setViewport] = useState({
     longitude: -100,
@@ -78,6 +85,11 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    myStorage.removeItem("user");
+    setCurrentUser(null);
+  };
+
   return (
     <div className="App">
       <Map
@@ -128,11 +140,7 @@ function App() {
                   <p className="desc">{p.desc}</p>
                   <label>Rating</label>
                   <div className="stars">
-                    <Star className="star" />
-                    <Star className="star" />
-                    <Star className="star" />
-                    <Star className="star" />
-                    <Star className="star" />
+                    {Array(p.rating).fill(<Star className="star" />)}
                   </div>
                   <label>Information</label>
                   <span className="username">
@@ -178,6 +186,31 @@ function App() {
               </form>
             </div>
           </Popup>
+        )}
+        {currentUser ? (
+          <button className="button logout" onClick={handleLogout}>
+            Log out
+          </button>
+        ) : (
+          <div className="buttons">
+            <button className="button login" onClick={() => setShowLogin(true)}>
+              Login
+            </button>
+            <button
+              className="button register"
+              onClick={() => setShowRegister(true)}
+            >
+              Register
+            </button>
+          </div>
+        )}
+        {showRegister && <Register setShowRegister={setShowRegister} />}
+        {showLogin && (
+          <Login
+            setShowLogin={setShowLogin}
+            setCurrentUser={setCurrentUser}
+            myStorage={myStorage}
+          />
         )}
       </Map>
     </div>
