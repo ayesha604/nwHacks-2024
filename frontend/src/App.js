@@ -96,6 +96,8 @@ function App() {
   };
 
   const handleAddClick = (e) => {
+    setCurrentPlaceId(null);
+    setEditCurrentPlaceId(null);
     console.log(e);
     const lat = e.lngLat.lat;
     const long = e.lngLat.lng;
@@ -106,16 +108,48 @@ function App() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    setWifiNo(!wifiYes);
+    setWashroomsNo(!washroomsYes);
+    setOutletsNo(!outletsYes);
+    setFoodNo(!foodYes);
+    setMenstrualNo(!menstrualYes);
+    setHrsNo(!hrsYes);
+
     const newPin = {
       username: currentUser,
-      title,
-      desc,
-      rating,
+      title: title,
       lat: newPlace.lat,
       long: newPlace.long,
+      resources: {
+        wifi: {
+          yes: wifiYes,
+          no: wifiNo,
+        },
+        outlets: {
+          yes: outletsYes,
+          no: outletsNo,
+        },
+        washroom: {
+          yes: washroomsYes,
+          no: washroomsNo,
+        },
+        food: {
+          yes: foodYes,
+          no: foodNo,
+        },
+        twentyfourhr: {
+          yes: hrsYes,
+          no: hrsNo,
+        },
+        menstrual: {
+          yes: menstrualYes,
+          no: menstrualNo,
+        },
+      },
     };
+
+    setNewPlace(null);
 
     try {
       const res = await axios.post("/pins", newPin);
@@ -255,6 +289,25 @@ function App() {
       setHrsYes(false);
     }
     setHrsNo(!hrsNo);
+  };
+
+  const handleNewWifiThumbsUp = () => {
+    setWifiYes(!wifiYes);
+  };
+  const handleNewOutletsThumbsUp = () => {
+    setOutletsYes(!outletsYes);
+  };
+  const handleNewWashroomsThumbsUp = () => {
+    setWashroomsYes(!washroomsYes);
+  };
+  const handleNewMenstrualThumbsUp = () => {
+    setMenstrualYes(!menstrualYes);
+  };
+  const handleNewFoodThumbsUp = () => {
+    setFoodYes(!foodYes);
+  };
+  const handleNewHrsThumbsUp = () => {
+    setHrsYes(!hrsYes);
   };
 
   return (
@@ -474,28 +527,61 @@ function App() {
               setNewPlace(null);
             }}
           >
-            <div>
-              <form onSubmit={handleSubmit}>
-                <label>Title</label>
-                <input
-                  placeholder="What's this place called?"
-                  onChange={(e) => setTitle(e.target.value)}
-                ></input>
-                <label>Review</label>
-                <textarea
-                  placeholder="Say something about this place!"
-                  onChange={(e) => setDesc(e.target.value)}
-                />
-                <label>Rating</label>
-                <select onChange={(e) => setRating(e.target.value)}>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-                <button className="submitButton">Add Pin</button>
-              </form>
+            <div className="ratingCard2">
+              <label>Place</label>
+              <input
+                placeholder="What's this place called?"
+                onChange={(e) => setTitle(e.target.value)}
+              ></input>
+              <label className="ammenities">Ammenities</label>
+              <div>
+                <div className="initialRatingContainer">
+                  <p>Wifi</p>
+                  <ThumbUp
+                    style={{ color: wifiYes ? "green" : "gray" }}
+                    onClick={() => handleNewWifiThumbsUp()}
+                  />
+                </div>
+                <div className="initialRatingContainer">
+                  <p>Chargers</p>
+                  <ThumbUp
+                    style={{ color: outletsYes ? "green" : "gray" }}
+                    onClick={() => handleNewOutletsThumbsUp()}
+                  />
+                </div>
+                <div className="initialRatingContainer">
+                  <p>Washrooms</p>
+                  <ThumbUp
+                    style={{ color: washroomsYes ? "green" : "gray" }}
+                    onClick={() => handleNewWashroomsThumbsUp()}
+                  />
+                </div>
+                <div className="initialRatingContainer">
+                  <p>Food</p>
+                  <ThumbUp
+                    style={{ color: foodYes ? "green" : "gray" }}
+                    onClick={() => handleNewFoodThumbsUp()}
+                  />
+                </div>
+                <div className="initialRatingContainer">
+                  <p>Open 24h</p>
+                  <ThumbUp
+                    style={{ color: hrsYes ? "green" : "gray" }}
+                    onClick={() => handleNewHrsThumbsUp()}
+                  />
+                </div>
+                <div className="initialRatingContainer">
+                  <p>Menstrual</p>
+                  <ThumbUp
+                    style={{ color: menstrualYes ? "green" : "gray" }}
+                    onClick={() => handleNewMenstrualThumbsUp()}
+                  />
+                </div>
+              </div>
+
+              <button className="submitButton" onClick={() => handleSubmit()}>
+                Add Pin
+              </button>
             </div>
           </Popup>
         )}
