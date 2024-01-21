@@ -17,10 +17,6 @@ import {
 } from "@mui/icons-material";
 import "./app.css";
 import axios from "axios";
-<<<<<<< HEAD
-=======
-import { format } from "timeago.js";
->>>>>>> 71e739d51ebe8c46b0658a35e93f3dc1b4dea3f1
 import Login from "./components/Login";
 import Register from "./components/Register";
 
@@ -39,7 +35,6 @@ function App() {
 
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-<<<<<<< HEAD
 
   const [wifiYes, setWifiYes] = useState(false);
   const [wifiNo, setWifiNo] = useState(false);
@@ -53,8 +48,6 @@ function App() {
   const [hrsNo, setHrsNo] = useState(false);
   const [menstrualYes, setMenstrualYes] = useState(false);
   const [menstrualNo, setMenstrualNo] = useState(false);
-=======
->>>>>>> 71e739d51ebe8c46b0658a35e93f3dc1b4dea3f1
 
   const [viewport, setViewport] = useState({
     longitude: -100,
@@ -115,7 +108,6 @@ function App() {
     }
   };
 
-<<<<<<< HEAD
   const handleSubmitRating = async (id) => {
     setCurrentPlaceId(null);
     setEditCurrentPlaceId(null);
@@ -159,14 +151,11 @@ function App() {
     }
   };
 
-=======
->>>>>>> 71e739d51ebe8c46b0658a35e93f3dc1b4dea3f1
   const handleLogout = () => {
     myStorage.removeItem("user");
     setCurrentUser(null);
   };
 
-<<<<<<< HEAD
   const handlePinEdit = (id) => {
     setEditCurrentPlaceId(id);
     setCurrentPlaceId(null);
@@ -250,8 +239,6 @@ function App() {
     setHrsNo(!hrsNo);
   };
 
-=======
->>>>>>> 71e739d51ebe8c46b0658a35e93f3dc1b4dea3f1
   return (
     <div className="App">
       <Map
@@ -296,7 +283,6 @@ function App() {
                 }}
               >
                 <div className="card">
-<<<<<<< HEAD
                   <h4 className="title">{p.title}</h4>
                   <div className="icons">
                     {p.resources.wifi.yes > 1 && <Wifi />}
@@ -436,15 +422,6 @@ function App() {
                       className="checkBtn"
                       onClick={() => handleSubmitRating(p._id)}
                     />
-=======
-                  <label>Place</label>
-                  <h4 className="place">{p.title}</h4>
-                  <label>Review</label>
-                  <p className="desc">{p.desc}</p>
-                  <label>Rating</label>
-                  <div className="stars">
-                    {Array(p.rating).fill(<Star className="star" />)}
->>>>>>> 71e739d51ebe8c46b0658a35e93f3dc1b4dea3f1
                   </div>
                 </div>
               </Popup>
