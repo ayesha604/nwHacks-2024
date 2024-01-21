@@ -7,12 +7,18 @@
   padding: 5px;
 }
 
+.initialRatingCard {
+  padding: 5px;
+  height: 400px;
+}
+
 .checkBtn {
   color: green;
   margin-top: 20px;
 }
 
-.ratingContainer {
+.ratingContainer,
+.initialRatingContainer {
   display: flex;
   align-items: center;
   justify-content: left;
@@ -21,8 +27,24 @@
   flex-direction: row-reverse;
 }
 
+.initialRatingContainer {
+  padding-top: 5px;
+}
+
+.ammenities {
+  padding-top: 15px;
+}
+
+.place {
+  padding-bottom: 15px;
+}
+
 .ratingCard {
   padding: 5px;
+}
+
+.ratingCard2 {
+  padding: 10px;
 }
 
 .icons {
