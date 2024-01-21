@@ -50,10 +50,27 @@ function App() {
   const [menstrualYes, setMenstrualYes] = useState(false);
   const [menstrualNo, setMenstrualNo] = useState(false);
 
-  const [viewport, setViewport] = useState({
-    longitude: -100,
-    latitude: 40,
-  });
+  const [viewport, setViewport] = useState(undefined);
+
+  useEffect(() => {
+    // Use Geolocation API to get the user's current position
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setViewport({
+            latitude,
+            longitude,
+          });
+        },
+        (error) => {
+          console.error('Error getting user location:', error.message);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by your browser');
+    }
+  }, []); // Run this effect once on component mount
 
   useEffect(() => {
     const getPins = () => {
@@ -242,13 +259,13 @@ function App() {
 
   return (
     <div className="App">
-      <Map
-        // {...viewport}
+      {viewport && <Map
+        //{...viewport}
         mapboxAccessToken="pk.eyJ1Ijoic2FicmluYWxvdSIsImEiOiJjbHJtcXAybDUweGtxMmpwOTZhenlpeHZtIn0.RsL-gzj42VvTaEURdM_A7g"
         initialViewState={{
-          longitude: -100,
-          latitude: 40,
-          zoom: 3.5,
+          longitude: viewport.longitude,
+          latitude: viewport.latitude,
+          zoom: 11,
         }}
         dragPan={true}
         onDblClick={handleAddClick}
@@ -334,7 +351,7 @@ function App() {
                       />
                     </div>
                     <div className="ratingContainer">
-                      <p>Chargers</p>
+                      <p>Charger</p>
                       <p>
                         {Math.floor(
                           (p.resources.outlets.yes * 100) /
@@ -496,7 +513,7 @@ function App() {
             myStorage={myStorage}
           />
         )}
-      </Map>
+      </Map>}
     </div>
   );
 }
