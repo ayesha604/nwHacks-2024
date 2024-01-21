@@ -2,6 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
 import {
+  Bolt,
   BrowseGallery,
   Check,
   Edit,
@@ -49,10 +50,27 @@ function App() {
   const [menstrualYes, setMenstrualYes] = useState(false);
   const [menstrualNo, setMenstrualNo] = useState(false);
 
-  const [viewport, setViewport] = useState({
-    longitude: -100,
-    latitude: 40,
-  });
+  const [viewport, setViewport] = useState(undefined);
+
+  useEffect(() => {
+    // Use Geolocation API to get the user's current position
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setViewport({
+            latitude,
+            longitude,
+          });
+        },
+        (error) => {
+          console.error('Error getting user location:', error.message);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by your browser');
+    }
+  }, []); // Run this effect once on component mount
 
   useEffect(() => {
     const getPins = () => {
@@ -294,13 +312,13 @@ function App() {
 
   return (
     <div className="App">
-      <Map
-        // {...viewport}
+      {viewport && <Map
+        //{...viewport}
         mapboxAccessToken="pk.eyJ1Ijoic2FicmluYWxvdSIsImEiOiJjbHJtcXAybDUweGtxMmpwOTZhenlpeHZtIn0.RsL-gzj42VvTaEURdM_A7g"
         initialViewState={{
-          longitude: -100,
-          latitude: 40,
-          zoom: 3.5,
+          longitude: viewport.longitude,
+          latitude: viewport.latitude,
+          zoom: 11,
         }}
         dragPan={true}
         onDblClick={handleAddClick}
@@ -338,12 +356,12 @@ function App() {
                 <div className="card">
                   <h4 className="title">{p.title}</h4>
                   <div className="icons">
-                    {p.resources.wifi.yes > 1 && <Wifi />}
-                    <Power />
-                    <Wc />
-                    <SoupKitchen />
-                    <BrowseGallery />
-                    <Female />
+                    {p.resources.wifi.yes/(p.resources.wifi.yes + p.resources.wifi.no) > 0.6 && <Wifi />}
+                    {p.resources.outlets.yes/(p.resources.outlets.yes + p.resources.outlets.no) > 0.6 && <Bolt />}
+                    {p.resources.washroom.yes/(p.resources.washroom.yes + p.resources.washroom.no) > 0.6 && <Wc />}
+                    {p.resources.food.yes/(p.resources.food.yes + p.resources.food.no) > 0.6 && <SoupKitchen />}
+                    {p.resources.twentyfourhr.yes/(p.resources.twentyfourhr.yes + p.resources.twentyfourhr.no) > 0.6 && <BrowseGallery />}
+                    {p.resources.menstrual.yes/(p.resources.menstrual.yes + p.resources.menstrual.no) > 0.6 && <Female />}
                   </div>
                   <div className="editBtnContainer">
                     <Edit
@@ -386,7 +404,7 @@ function App() {
                       />
                     </div>
                     <div className="ratingContainer">
-                      <p>Outlets</p>
+                      <p>Charger</p>
                       <p>
                         {Math.floor(
                           (p.resources.outlets.yes * 100) /
@@ -406,8 +424,10 @@ function App() {
                     <div className="ratingContainer">
                       <p>Washrooms</p>
                       <p>
-                        {(p.resources.washroom.yes * 100) /
-                          (p.resources.washroom.yes + p.resources.washroom.no)}
+                        {Math.floor(
+                          (p.resources.washroom.yes * 100) /
+                          (p.resources.washroom.yes + p.resources.washroom.no)
+                          )}
                         %
                       </p>
                       <ThumbDown
@@ -422,8 +442,10 @@ function App() {
                     <div className="ratingContainer">
                       <p>Food</p>
                       <p>
-                        {(p.resources.food.yes * 100) /
-                          (p.resources.food.yes + p.resources.food.no)}
+                      {Math.floor(
+                        (p.resources.food.yes * 100) /
+                        (p.resources.food.yes + p.resources.food.no)
+                        )}
                         %
                       </p>
                       <ThumbDown
@@ -438,9 +460,11 @@ function App() {
                     <div className="ratingContainer">
                       <p>Open 24h</p>
                       <p>
-                        {(p.resources.twentyfourhr.yes * 100) /
-                          (p.resources.twentyfourhr.yes +
-                            p.resources.twentyfourhr.no)}
+                      {Math.floor(
+                        (p.resources.twentyfourhr.yes * 100) /
+                        (p.resources.twentyfourhr.yes +
+                        p.resources.twentyfourhr.no)
+                        )}
                         %
                       </p>
                       <ThumbDown
@@ -455,9 +479,10 @@ function App() {
                     <div className="ratingContainer">
                       <p>Mentrual</p>
                       <p>
-                        {(p.resources.menstrual.yes * 100) /
-                          (p.resources.menstrual.yes +
-                            p.resources.menstrual.no)}
+                      {Math.floor((p.resources.menstrual.yes * 100) /
+                        (p.resources.menstrual.yes +
+                        p.resources.menstrual.no)
+                        )}
                         %
                       </p>
                       <ThumbDown
@@ -574,7 +599,7 @@ function App() {
             myStorage={myStorage}
           />
         )}
-      </Map>
+      </Map>}
     </div>
   );
 }
