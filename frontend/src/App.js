@@ -2,6 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
 import {
+  LocalDining,
   PinSharp,
   Room,
   Star,
@@ -9,18 +10,29 @@ import {
 } from "@mui/icons-material";
 import "./app.css";
 import axios from "axios";
+import { format } from "timeago.js";
 
 function App() {
+  const currentUser = "jogn";
+
   const [pins, setPins] = useState([]);
+  const [currentPlaceId, setCurrentPlaceId] = useState(null);
+  const [newPlace, setNewPlace] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [desc, setDesc] = useState(null);
+  const [rating, setRating] = useState(0);
+
+  const [viewport, setViewport] = useState({
+    longitude: -100,
+    latitude: 40,
+  });
 
   useEffect(() => {
     const getPins = () => {
       axios
         .get("/pins")
         .then((res) => {
-          console.log(res.data);
           setPins(res.data);
-          console.log(pins);
         })
         .catch((err) => {
           console.log(err);
@@ -30,31 +42,58 @@ function App() {
     getPins();
   }, []);
 
-  useEffect(() => {
-    console.log("hiii" + pins);
-    console.log(pins);
-  }, [pins]);
+  const handleMarkerClick = (id, lat, long) => {
+    setCurrentPlaceId(id);
+    setViewport({ ...viewport, latitude: lat, longitude: long });
+  };
+
+  const handleAddClick = (e) => {
+    console.log(e);
+    const lat = e.lngLat.lat;
+    const long = e.lngLat.lng;
+    console.log(lat, long);
+    setNewPlace({
+      lat,
+      long,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newPin = {
+      username: currentUser,
+      title,
+      desc,
+      rating,
+      lat: newPlace.lat,
+      long: newPlace.long,
+    };
+
+    try {
+      const res = await axios.post("/pins", newPin);
+      setPins([...pins, res.data]);
+      setNewPlace(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="App">
       <Map
+        // {...viewport}
         mapboxAccessToken="pk.eyJ1Ijoic2FicmluYWxvdSIsImEiOiJjbHJtcXAybDUweGtxMmpwOTZhenlpeHZtIn0.RsL-gzj42VvTaEURdM_A7g"
         initialViewState={{
           longitude: -100,
           latitude: 40,
           zoom: 3.5,
         }}
+        dragPan={true}
+        onDblClick={handleAddClick}
         style={{ width: "100vw", height: "100vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
+        // onMove={(viewport) => setViewport(viewport)}
       >
-        {/* <Marker longitude={-74.0445} latitude={40.6892} anchor="bottom">
-          <Room
-            style={{
-              fontSize: visualViewport.zoom * 10,
-              color: "slateblue",
-            }}
-          />
-        </Marker> */}
         {pins.map((p) => (
           <>
             <Marker
@@ -66,39 +105,80 @@ function App() {
               <Room
                 style={{
                   fontSize: visualViewport.zoom * 10,
-                  color: "slateblue",
+                  color: p.username === currentUser ? "tomato" : "slateblue",
+                  cursor: "pointer",
                 }}
+                onClick={() => handleMarkerClick(p._id, p.lat, p.long)}
               />
             </Marker>
-
-            {/* <Popup
-        longitude={-100}
-        latitude={40}
-          anchor="left"
-          closeOnClick={false}
-        >
-          <div className="card">
-          <label>Place</label>
-            <h4 className="place">Eiffel Tower</h4>
-            <label>Review</label>
-            <p className="desc">Beautiful</p>
-            <label>Rating</label>
-            <div className="stars">
-              <Star className="star" />
-              <Star className="star" />
-              <Star className="star" />
-              <Star className="star" />
-              <Star className="star" />
-              </div>
-              <label>Information</label>
-              <span className="username">
-              Created by <b>sadak</b>
-              </span>
-              <span className="date">1 hour ago</span>
-              </div>
-            </Popup> */}
+            {p._id === currentPlaceId && (
+              <Popup
+                longitude={p.long}
+                latitude={p.lat}
+                anchor="left"
+                closeOnClick={false}
+                onClose={() => {
+                  setCurrentPlaceId(null);
+                }}
+              >
+                <div className="card">
+                  <label>Place</label>
+                  <h4 className="place">{p.title}</h4>
+                  <label>Review</label>
+                  <p className="desc">{p.desc}</p>
+                  <label>Rating</label>
+                  <div className="stars">
+                    <Star className="star" />
+                    <Star className="star" />
+                    <Star className="star" />
+                    <Star className="star" />
+                    <Star className="star" />
+                  </div>
+                  <label>Information</label>
+                  <span className="username">
+                    Created by <b>{p.username}</b>
+                  </span>
+                  <span className="date">{format(p.createdAt)}</span>
+                </div>
+              </Popup>
+            )}
           </>
         ))}
+        {newPlace && (
+          <Popup
+            longitude={newPlace.long}
+            latitude={newPlace.lat}
+            anchor="left"
+            closeOnClick={false}
+            onClose={() => {
+              setNewPlace(null);
+            }}
+          >
+            <div>
+              <form onSubmit={handleSubmit}>
+                <label>Title</label>
+                <input
+                  placeholder="What's this place called?"
+                  onChange={(e) => setTitle(e.target.value)}
+                ></input>
+                <label>Review</label>
+                <textarea
+                  placeholder="Say something about this place!"
+                  onChange={(e) => setDesc(e.target.value)}
+                />
+                <label>Rating</label>
+                <select onChange={(e) => setRating(e.target.value)}>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <button className="submitButton">Add Pin</button>
+              </form>
+            </div>
+          </Popup>
+        )}
       </Map>
     </div>
   );
