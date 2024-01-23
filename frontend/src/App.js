@@ -97,7 +97,6 @@ function App() {
     setEditCurrentPlaceId(null);
     setWifiNo(false);
     setWifiYes(false);
-    setViewport({ ...viewport, latitude: lat, longitude: long });
   };
 
   const handleAddClick = (e) => {
